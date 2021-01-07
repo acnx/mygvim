@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =5
+let g:netrw_dirhist_5='C:\Users\i\Desktop'
+let g:netrw_dirhist_4='D:\vim'
+let g:netrw_dirhist_3='E:/Note'
+let g:netrw_dirhist_2='E:/'
+let g:netrw_dirhist_1='E:\Code\Typecho-theme-DUX-master\Typecho-theme-DUX-master\dux'
+let g:netrw_dirhist_0='E:/Code/Typecho-theme-DUX-master/Typecho-theme-DUX-master/dux'
+let g:netrw_dirhist_9='E:/Code/Typecho-theme-DUX-master/Typecho-theme-DUX-master'
+let g:netrw_dirhist_8='E:/Code/Typecho-theme-DUX-master'
+let g:netrw_dirhist_7='E:/Code'
+let g:netrw_dirhist_6='E:/'
