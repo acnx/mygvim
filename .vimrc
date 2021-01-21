@@ -8,7 +8,6 @@ filetype indent on
 " Set to auto read when a file is changed from the outside
 set autoread
 au FocusGained,BufEnter * checktime
-
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
 let mapleader = ","
@@ -93,7 +92,8 @@ endif
 
 
 " Add a bit extra margin to the left
-set foldcolumn=1
+set foldcolumn=0
+
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -371,6 +371,10 @@ function! ToggleVExplorer()
 endfunction
 map <silent> <C-E> :call ToggleVExplorer()<CR>
 
+map <silent> <C-f12> :call libcallnr("vimtweak64.dll", "SetAlpha", 210)<CR> 
+map <silent> <F11> :call libcallnr("vimtweak64.dll", "EnableMaximize", 1)<CR>
+map <silent> <S-F11> :call libcallnr("vimtweak64.dll", "EnableMaximize", 0)<CR>
+map <silent> <S-F10> :call libcallnr("vimtweak64.dll", "EnableTopMost", 1)<CR>
 " Hit enter in the file browser to open the selected
 " file with :vsplit to the right of the browser.
 let g:netrw_browse_split = 4
@@ -387,7 +391,7 @@ filetype on
 set autoindent
 set smartindent
 set vb t_vb=
-set guifont=Consolas:h12:cDEFAULT
+set guifont=Consolas:h10:cDEFAULT
 colorscheme dark_plus
 set guioptions-=m
 set guioptions-=T
@@ -395,19 +399,24 @@ set colorcolumn=80
 set guioptions-=r
 set guioptions-=L
 set linespace=4
-set lines=20 columns=80
+set lines=20 columns=90
+set relativenumber
+set number
+set scrolloff=3
 
-call plug#begin()
+call plug#begin('$vim/vimfiles/plugged')
 Plug 'iamcco/mathjax-support-for-mkdp'
 Plug 'iamcco/markdown-preview.vim'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+"Plug 'SirVer/ultisnips'
+"Plug 'honza/vim-snippets'
 Plug 'dhruvasagar/vim-table-mode'
+Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
+"Plug 'vimwiki/vimwiki'
 call plug#end()
 
 " Compile function
-map <F5> :call CompileRunGcc()<CR>
-func! CompileRunGcc()
+map <F5> :call CompileRun()<CR>
+func! CompileRun()
   exec "w"
   if &filetype == 'c'
     exec "!gcc % -o %<"
@@ -455,3 +464,57 @@ inoreabbrev <expr> __
 
 
 exec 'cd ' . fnameescape('E:\')
+
+set nocompatible
+syntax on
+
+
+""function! Fcitx2en()
+""    let input_status = system('fcitx-remote')
+""    if input_status == 2
+""        let b:inputtoggle = 1
+""        call system('fcitx-remote -c')
+""    endif
+""endfunction
+""function! Fcitx2zh()
+""    try
+""	if b:inputtoggle == 1
+""	    call system('fcitx-remote -o')
+""	    let b:inputtoggle = 0
+""	endif
+""    catch /inputtoggle/
+""        let b:inputtoggle = 0
+""    endtry
+""endfunction
+""" Autocmds:
+""au InsertLeave * call Fcitx2en()
+""au InsertEnter * call Fcitx2zh()
+
+" Go to last file(s) if invoked without arguments.
+autocmd VimLeave * nested if (!isdirectory($HOME . "/.vim")) |
+    \ call mkdir($HOME . "/.vim") |
+    \ endif |
+    \ execute "mksession! " . $HOME . "/.vim/Session.vim"
+
+autocmd VimEnter * nested if argc() == 0 && filereadable($HOME . "/.vim/Session.vim") |
+    \ execute "source " . $HOME . "/.vim/Session.vim"
+
+
+
+inoremap ( ()<ESC>i
+inoremap ) <c-r>=ClosePair(')')<CR>
+inoremap { {<CR>}<ESC>O
+inoremap } <c-r>=ClosePair('}')<CR>
+inoremap [ []<ESC>i
+inoremap ] <c-r>=ClosePair(']')<CR>
+inoremap < <><ESC>i
+inoremap " ""<ESC>i
+inoremap ' ''<ESC>i
+function! ClosePair(char)
+    if getline('.')[col('.') - 1] == a:char
+        return "\<Right>"
+    else
+        return a:char
+    endif
+endfunction
+
