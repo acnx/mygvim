@@ -1,4 +1,3 @@
-" Sets how many lines of history VIM has to remember
 set history=1000
 
 " Enable filetype plugins
@@ -19,10 +18,6 @@ nmap <leader>w :w!<cr>
 " (useful for handling the permission-denied error)
 command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => VIM user interface
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Set 7 lines to the cursor - when moving vertically using j/k
 set so=7
 
@@ -76,6 +71,7 @@ set magic
 
 " Show matching brackets when text indicator is over them
 set showmatch 
+
 " How many tenths of a second to blink when matching brackets
 set mat=2
 
@@ -84,6 +80,8 @@ set noerrorbells
 set novisualbell
 set t_vb=
 set tm=500
+set vb t_vb=
+au GuiEnter * set t_vb=
 
 " Properly disable sound on errors on MacVim
 if has("gui_macvim")
@@ -93,8 +91,6 @@ endif
 
 " Add a bit extra margin to the left
 set foldcolumn=0
-
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
@@ -106,9 +102,6 @@ syntax enable
 if $COLORTERM == 'gnome-terminal'
     set t_Co=256
 endif
-
-
-"set background=dark
 
 " Set extra options when running in GUI mode
 if has("gui_running")
@@ -124,7 +117,6 @@ set encoding=utf8
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
 
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Files, backups and undo
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -132,7 +124,6 @@ set ffs=unix,dos,mac
 set nobackup
 set nowb
 set noswapfile
-
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Text, tab and indent related
@@ -163,6 +154,7 @@ set wrap "Wrap lines
 " Super useful! From an idea by Michael Naumann
 vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
+
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -364,17 +356,38 @@ function! ToggleVExplorer()
           unlet t:expl_buf_num
       endif
   else
-      exec '1wincmd w'
+      exec 'wincmd w'
       Vexplore
       let t:expl_buf_num = bufnr("%")
   endif
 endfunction
 map <silent> <C-E> :call ToggleVExplorer()<CR>
 
+autocmd filetype netrw call Netrw_mappings()
+function! Netrw_mappings()
+  noremap <buffer>% :call CreateInPreview()<cr>
+endfunction
+
+"function! CreateInPreview()
+"  let l:filename = input("plase enter filename: ")
+"  execute 'pedit ' . b:netrw_curdir.'/'.l:filename
+"endfunction
+
+
+function! CreateInPreview()
+  let l:filename = input("please enter filename: ")
+  execute 'silent !touch ' . b:netrw_curdir.'/'.l:filename 
+  redraw!
+endf
+
+
 map <silent> <C-f12> :call libcallnr("vimtweak64.dll", "SetAlpha", 210)<CR> 
 map <silent> <F11> :call libcallnr("vimtweak64.dll", "EnableMaximize", 1)<CR>
 map <silent> <S-F11> :call libcallnr("vimtweak64.dll", "EnableMaximize", 0)<CR>
 map <silent> <S-F10> :call libcallnr("vimtweak64.dll", "EnableTopMost", 1)<CR>
+map <silent> <C-S-t> :terminal <CR><C-w>r
+"map <silent> <C-S-Enter> o<Enter>
+map <silent> <S-Enter> o<Enter>
 " Hit enter in the file browser to open the selected
 " file with :vsplit to the right of the browser.
 let g:netrw_browse_split = 4
@@ -406,16 +419,19 @@ set scrolloff=3
 
 call plug#begin('$vim/vimfiles/plugged')
 Plug 'iamcco/mathjax-support-for-mkdp'
-Plug 'iamcco/markdown-preview.vim'
-"Plug 'SirVer/ultisnips'
+"Plug 'iamcco/markdown-preview.vim'
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+Plug 'SirVer/ultisnips'
 "Plug 'honza/vim-snippets'
-Plug 'dhruvasagar/vim-table-mode'
 Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
 "Plug 'vimwiki/vimwiki'
+Plug 'tpope/vim-fugitive'
+"Plug 'preservim/nerdtree'
 call plug#end()
 
+
 " Compile function
-map <F5> :call CompileRun()<CR>
+map <C-F5> :call CompileRun()<CR>
 func! CompileRun()
   exec "w"
   if &filetype == 'c'
@@ -461,55 +477,31 @@ inoreabbrev <expr> __
           \ <SID>isAtStartOfLine('__') ?
           \ '<c-o>:silent! TableModeDisable<cr>' : '__'
 
-
-
-exec 'cd ' . fnameescape('E:\')
+exec 'cd ' . fnameescape('E:\Note\')
 
 set nocompatible
 syntax on
 
 
-""function! Fcitx2en()
-""    let input_status = system('fcitx-remote')
-""    if input_status == 2
-""        let b:inputtoggle = 1
-""        call system('fcitx-remote -c')
-""    endif
-""endfunction
-""function! Fcitx2zh()
-""    try
-""	if b:inputtoggle == 1
-""	    call system('fcitx-remote -o')
-""	    let b:inputtoggle = 0
-""	endif
-""    catch /inputtoggle/
-""        let b:inputtoggle = 0
-""    endtry
-""endfunction
-""" Autocmds:
-""au InsertLeave * call Fcitx2en()
-""au InsertEnter * call Fcitx2zh()
+"" Go to last file(s) if invoked without arguments.
+"autocmd VimLeave * nested if (!isdirectory($HOME . "/.vim")) |
+"    \ call mkdir($HOME . "/.vim") |
+"    \ endif |
+"    \ execute "mksession! " . $HOME . "/.vim/Session.vim"
+"
+"autocmd VimEnter * nested if argc() == 0 && filereadable($HOME . "/.vim/Session.vim") |
+"    \ execute "source " . $HOME . "/.vim/Session.vim"
+"
 
-" Go to last file(s) if invoked without arguments.
-autocmd VimLeave * nested if (!isdirectory($HOME . "/.vim")) |
-    \ call mkdir($HOME . "/.vim") |
-    \ endif |
-    \ execute "mksession! " . $HOME . "/.vim/Session.vim"
-
-autocmd VimEnter * nested if argc() == 0 && filereadable($HOME . "/.vim/Session.vim") |
-    \ execute "source " . $HOME . "/.vim/Session.vim"
-
-
-
-inoremap ( ()<ESC>i
-inoremap ) <c-r>=ClosePair(')')<CR>
+""inoremap ( ()<ESC>i
+""inoremap ) <c-r>=ClosePair(')')<CR>
 inoremap { {<CR>}<ESC>O
 inoremap } <c-r>=ClosePair('}')<CR>
-inoremap [ []<ESC>i
-inoremap ] <c-r>=ClosePair(']')<CR>
-inoremap < <><ESC>i
-inoremap " ""<ESC>i
-inoremap ' ''<ESC>i
+
+""inoremap [ []<ESC>i
+"inoremap ] <c-r>=ClosePair(']')<CR>
+"inoremap < <><ESC>i
+"inoremap ' ''<ESC>i
 function! ClosePair(char)
     if getline('.')[col('.') - 1] == a:char
         return "\<Right>"
@@ -518,3 +510,14 @@ function! ClosePair(char)
     endif
 endfunction
 
+
+
+" Trigger configuration. You need to change this to something other than <tab> if you use one of the following:
+" - https://github.com/Valloric/YouCompleteMe
+" - https://github.com/nvim-lua/completion-nvim
+let g:UltiSnipsExpandTrigger="<tab>"
+" 使用 tab 切换下一个触发点，shit+tab 上一个触发点
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
+" 使用 UltiSnipsEdit 命令时垂直分割屏幕
+let g:UltiSnipsEditSplit="vertical"
