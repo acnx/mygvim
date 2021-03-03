@@ -92,6 +92,10 @@ endif
 " Add a bit extra margin to the left
 set foldcolumn=0
 
+
+
+"设置gvim窗口启动时在屏幕的位置
+winpos 300 100
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Colors and Fonts
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -113,6 +117,9 @@ endif
 
 " Set utf8 as standard encoding and en_US as the standard language
 set encoding=utf8
+set fileencodings=ucs-bom,utf-8,cp936
+set fileencoding=gb2312
+set termencoding=utf-8
 
 " Use Unix as the standard file type
 set ffs=unix,dos,mac
@@ -342,50 +349,86 @@ function! VisualSelection(direction, extra_filter) range
     let @" = l:saved_reg
 endfunction
 
-" Toggle Vexplore with Ctrl-E
-function! ToggleVExplorer()
-  if exists("t:expl_buf_num")
-      let expl_win_num = bufwinnr(t:expl_buf_num)
-      if expl_win_num != -1
-          let cur_win_nr = winnr()
-          exec expl_win_num . 'wincmd w'
-          close
-          exec cur_win_nr . 'wincmd w'
-          unlet t:expl_buf_num
-      else
-          unlet t:expl_buf_num
-      endif
-  else
-      exec 'wincmd w'
-      Vexplore
-      let t:expl_buf_num = bufnr("%")
-  endif
-endfunction
-map <silent> <C-E> :call ToggleVExplorer()<CR>
+" " Toggle Vexplore with Ctrl-E
+" function! ToggleVExplorer()
+"   if exists("t:expl_buf_num")
+"       let expl_win_num = bufwinnr(t:expl_buf_num)
+"       if expl_win_num != -1
+"           let cur_win_nr = winnr()
+"           exec expl_win_num . 'wincmd w'
+"           close
+"           exec cur_win_nr . 'wincmd w'
+"           unlet t:expl_buf_num
+"       else
+"           exec <C-w> h 
+"           unlet t:expl_buf_num
+"       endif
+"   else
+"       exec 'wincmd w'
+"       Vexplore
+"       let t:expl_buf_num = bufnr("%")
+"   endif
+" endfunction
+" map <silent> <C-E> :call ToggleVExplorer()<CR>
+" 
+" autocmd filetype netrw call Netrw_mappings()
+" function! Netrw_mappings()
+"   noremap <buffer>% :call CreateInPreview()<cr>
+" endfunction
+" 
+" "function! CreateInPreview()
+" "  let l:filename = input("plase enter filename: ")
+" "  execute 'pedit ' . b:netrw_curdir.'/'.l:filename
+" "endfunction
+" 
+" 
+" function! CreateInPreview()
+"   let l:filename = input("filename: ")
+"   execute 'silent !touch ' . b:netrw_curdir.'/'.l:filename 
+"   redraw!
+" endf
 
-autocmd filetype netrw call Netrw_mappings()
-function! Netrw_mappings()
-  noremap <buffer>% :call CreateInPreview()<cr>
-endfunction
 
-"function! CreateInPreview()
-"  let l:filename = input("plase enter filename: ")
-"  execute 'pedit ' . b:netrw_curdir.'/'.l:filename
+"NerdTree
+"
+"nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-n> :NERDTree<CR>
+"nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
+
+ map <S-e> :NERDTreeMirror<CR>
+ map <S-e> :NERDTreeToggle<CR>
+
+" Exit Vim if NERDTree is the only window left.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() |
+    \ quit | endif
+
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+
+let g:NERDTreeDirArrowExpandable = '▸'
+let g:NERDTreeDirArrowCollapsible = '▾'
+
+" 是否显示隐藏文件
+let NERDTreeShowHidden=1
+" 设置宽度
+let NERDTreeWinSize=25
+let NERDTreeIgnore=['\.pyc','\~$','\.swp']
+
+"NerdTree end""""""""""""""""""""
+
+"function SetAlp()
+"   call libcallnr("vimtweak64.dll", "SetAlpha", 220)<CR>
 "endfunction
+":autocmd GUIEnter * :call SetAlp()<CR>
 
 
-function! CreateInPreview()
-  let l:filename = input("please enter filename: ")
-  execute 'silent !touch ' . b:netrw_curdir.'/'.l:filename 
-  redraw!
-endf
-
-
-map <silent> <C-f12> :call libcallnr("vimtweak64.dll", "SetAlpha", 210)<CR> 
+map <silent> <C-f12> :call libcallnr("vimtweak64.dll", "SetAlpha", 220)<CR> 
 map <silent> <F11> :call libcallnr("vimtweak64.dll", "EnableMaximize", 1)<CR>
 map <silent> <S-F11> :call libcallnr("vimtweak64.dll", "EnableMaximize", 0)<CR>
 map <silent> <S-F10> :call libcallnr("vimtweak64.dll", "EnableTopMost", 1)<CR>
-map <silent> <C-S-t> :terminal <CR><C-w>r
+"map <silent> <C-t> :terminal <CR><C-w>r
 "map <silent> <C-S-Enter> o<Enter>
 map <silent> <S-Enter> o<Enter>
 " Hit enter in the file browser to open the selected
@@ -399,20 +442,24 @@ let g:netrw_winsize = 25
 " Change directory to the current buffer when opening files.
 set autochdir
 
+set clipboard=unnamed
+set mouse=nicr
+
+
 syntax on
 filetype on
 set autoindent
 set smartindent
 set vb t_vb=
-set guifont=Consolas:h10:cDEFAULT
+set guifont=Consolas:h11:cDEFAULT
 colorscheme dark_plus
 set guioptions-=m
 set guioptions-=T
-set colorcolumn=80
+set colorcolumn=81
 set guioptions-=r
 set guioptions-=L
 set linespace=4
-set lines=20 columns=90
+set lines=20 columns=88
 set relativenumber
 set number
 set scrolloff=3
@@ -427,7 +474,16 @@ Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
 "Plug 'vimwiki/vimwiki'
 Plug 'tpope/vim-fugitive'
 "Plug 'preservim/nerdtree'
+Plug 'preservim/nerdtree'
+Plug 'ferrine/md-img-paste.vim'
+Plug 'xojs/vim-xo'
 call plug#end()
+autocmd FileType markdown nmap <buffer><silent> <leader>i :call mdip#MarkdownClipboardImage()<CR>
+" there are some defaults for image directory and image name, you can change them
+let g:mdip_imgdir = './img'
+let g:mdip_imgname = 'image'
+
+let g:syntastic_javascript_checkers = ['xo']
 
 
 " Compile function
@@ -477,7 +533,7 @@ inoreabbrev <expr> __
           \ <SID>isAtStartOfLine('__') ?
           \ '<c-o>:silent! TableModeDisable<cr>' : '__'
 
-exec 'cd ' . fnameescape('E:\Note\')
+exec 'cd ' . fnameescape('E:\')
 
 set nocompatible
 syntax on
@@ -521,3 +577,10 @@ let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
 " 使用 UltiSnipsEdit 命令时垂直分割屏幕
 let g:UltiSnipsEditSplit="vertical"
+
+
+
+function SetAlp()
+   call libcallnr("vimtweak64.dll", "SetAlpha", 255)
+endfunction
+:autocmd VimEnter *  call SetAlp()

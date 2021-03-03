@@ -63,9 +63,9 @@ highlight LightBlue ctermfg=6 guifg=#9cdcfe cterm=NONE gui=NONE
 highlight BrightBlue ctermfg=4 guifg=#007acc cterm=NONE gui=NONE
 highlight Magenta ctermfg=13 guifg=#c586c0 cterm=NONE gui=NONE
 highlight Violet ctermfg=13 guifg=#646695 cterm=NONE gui=NONE
-highlight Comment ctermfg=0 guifg=#505050 cterm=italic gui=italic
+highlight Comment ctermfg=0 guifg=#505050 cterm=NONE gui=NONE
 highlight DocString ctermfg=2 guifg=#608b4e cterm=italic gui=italic
-highlight SpecialComment ctermfg=2 guifg=#608b4e cterm=italic gui=italic
+highlight SpecialComment ctermfg=0 guifg=#608b4e cterm=NONE gui=NONE
 highlight PlainText ctermfg=7 guifg=#d4d4d4 ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
 highlight Control ctermfg=13 guifg=#c586c0 ctermbg=NONE guibg=NONE cterm=NONE gui=NONE
 highlight Escape ctermfg=3 guifg=#d7ba7d cterm=italic gui=italic
